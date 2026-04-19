@@ -25,8 +25,8 @@ canvas {
 
 /* Círculo con difuminado verde suave */
 .circle {
-    width: 420px;
-    height: 420px;
+    width: 820px;
+    height: 820px;
     border-radius: 50%;
     padding: 6px;
 
@@ -83,12 +83,12 @@ canvas {
 
 .name {
     margin-top: 25px;
-    font-size: 55px;
+    font-size: 255px;
     font-weight: 600;
 }
 
 .domain {
     margin-top: 5px;
-    font-size: 30px;
+    font-size: 200px;
     opacity: 0.9;
 }
