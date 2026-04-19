@@ -1,0 +1,13 @@
+
+/* Animación de giro */
+@keyframes spin3d {
+    0%   { transform: rotateY(0deg); }
+    50%  { transform: rotateY(180deg); }
+    100% { transform: rotateY(360deg); }
+}
+
+/* Parpadeo */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.5; }
+}
