@@ -7,7 +7,7 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 const letters = "01";
-const fontSize = 18;
+const fontSize = 28;
 const columns = canvas.width / fontSize;
 
 const drops = [];

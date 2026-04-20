@@ -36,12 +36,12 @@ canvas {
 /* Tamaños responsivos */
 .name {
     margin-top: 25px;
-    font-size: clamp(32px, 5vw, 90px);
+    font-size: clamp(28px, 4.5vw, 70px);
     font-weight: 600;
 }
 
 .domain {
     margin-top: 5px;
-    font-size: clamp(20px, 3vw, 50px);
+    font-size: clamp(18px, 2.8vw, 40px);
     opacity: 0.9;
 }
