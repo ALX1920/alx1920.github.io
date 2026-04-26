@@ -24,3 +24,22 @@
     transform: scale(1.05);
 }
 
+.btn-port {
+    display: inline-block;
+    margin-top: 20px;
+    margin-left: 20px;
+    color: #00ff55;
+    font-size: clamp(18px, 2vw, 28px);
+    font-weight: 600;
+    text-decoration: none;
+
+    /* Glow estilo Matrix */
+    text-shadow: 0 0 8px #00ff55, 0 0 12px #00ff55;
+
+    /* Sin fondo, sin borde */
+    background: none;
+    border: none;
+
+    /* Animación suave */
+    transition: 0.3s ease;
+}
