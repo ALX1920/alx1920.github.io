@@ -12,3 +12,74 @@
     50%      { opacity: 0.5; }
 }
 
+/* ===== GLITCH (disparado por el "malware" en la lluvia matrix) ===== */
+/* Nivel 1: caída normal */
+@keyframes glitch-1 {
+    0%   { transform: translate(0, 0); filter: none; }
+    15%  { transform: translate(-7px, 4px); filter: hue-rotate(-35deg) drop-shadow(3px 0 0 #ff003c); }
+    30%  { transform: translate(7px, -4px); filter: hue-rotate(25deg) drop-shadow(-3px 0 0 #ff003c); }
+    45%  { transform: translate(-5px, -2px); filter: none; }
+    60%  { transform: translate(6px, 3px); filter: drop-shadow(2px 0 0 #ff003c); }
+    75%  { transform: translate(-4px, 2px); filter: none; }
+    100% { transform: translate(0, 0); filter: none; }
+}
+
+/* Nivel 2: más suspenso (parpadeos más largos, más recorrido) */
+@keyframes glitch-2 {
+    0%   { transform: translate(0, 0); opacity: 1; filter: none; }
+    8%   { transform: translate(-10px, 5px); opacity: 0.75; filter: hue-rotate(-45deg) drop-shadow(4px 0 0 #ff003c); }
+    18%  { transform: translate(0, 0); opacity: 1; filter: none; }
+    30%  { transform: translate(10px, -5px); opacity: 0.7; filter: hue-rotate(35deg) drop-shadow(-4px 0 0 #ff003c); }
+    42%  { transform: translate(-8px, 4px); opacity: 1; filter: none; }
+    55%  { transform: translate(9px, -3px); opacity: 0.65; filter: drop-shadow(3px 0 0 #ff003c); }
+    68%  { transform: translate(-7px, 3px); opacity: 1; filter: none; }
+    80%  { transform: translate(6px, -2px); opacity: 0.75; filter: drop-shadow(-3px 0 0 #ff003c); }
+    92%  { transform: translate(-4px, 1px); opacity: 1; filter: none; }
+    100% { transform: translate(0, 0); opacity: 1; filter: none; }
+}
+
+/* Nivel 3: alarmante (recorrido amplio, parpadeo fuerte, casi sin pausa) */
+@keyframes glitch-3 {
+    0%   { transform: translate(0, 0) scale(1); opacity: 1; filter: none; }
+    6%   { transform: translate(-16px, 7px) scale(1.02); opacity: 0.45; filter: hue-rotate(-70deg) drop-shadow(6px 0 0 #ff003c); }
+    13%  { transform: translate(14px, -8px) scale(0.98); opacity: 1; filter: drop-shadow(-6px 0 0 #ff003c); }
+    20%  { transform: translate(-12px, -5px) scale(1); opacity: 0.4; filter: hue-rotate(50deg); }
+    28%  { transform: translate(13px, 8px) scale(1.02); opacity: 1; filter: drop-shadow(5px 0 0 #ff003c); }
+    38%  { transform: translate(-10px, 3px); opacity: 0.5; filter: none; }
+    48%  { transform: translate(11px, -6px); opacity: 1; filter: hue-rotate(-30deg) drop-shadow(-5px 0 0 #ff003c); }
+    58%  { transform: translate(-9px, 5px); opacity: 0.55; filter: none; }
+    68%  { transform: translate(9px, -4px); opacity: 1; filter: drop-shadow(4px 0 0 #ff003c); }
+    78%  { transform: translate(-6px, 3px); opacity: 0.7; filter: none; }
+    88%  { transform: translate(5px, -2px); opacity: 1; filter: drop-shadow(-3px 0 0 #ff003c); }
+    100% { transform: translate(0, 0) scale(1); opacity: 1; filter: none; }
+}
+
+.content.glitch-1 { animation: glitch-1 0.9s steps(2, end) 1; }
+.content.glitch-2 { animation: glitch-2 0.8s steps(3, end) 2; }
+.content.glitch-3 { animation: glitch-3 0.8s steps(4, end) 3; }
+
+/* Tinte rojo de fondo, solo para los niveles con más tensión */
+.danger-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(circle at center, rgba(255, 0, 60, 0.35), transparent 70%);
+}
+
+@keyframes danger-pulse-2 {
+    0%, 100% { opacity: 0; }
+    50%      { opacity: 0.22; }
+}
+
+@keyframes danger-pulse-3 {
+    0%, 100%  { opacity: 0; }
+    20%       { opacity: 0.4; }
+    45%       { opacity: 0.12; }
+    70%       { opacity: 0.45; }
+}
+
+.danger-overlay.level-2 { animation: danger-pulse-2 0.8s ease-in-out 2; }
+.danger-overlay.level-3 { animation: danger-pulse-3 0.8s ease-in-out 3; }
+
