@@ -1,407 +1,171 @@
-````md
 # Changelog — alejandromtz.dev
 
-Documentación técnica de todos los cambios realizados sobre el proyecto original: landing con efecto Matrix, círculo animado y enlaces de CV/Portfolio.
+Documentación técnica de todos los cambios hechos sobre el proyecto original (landing con efecto Matrix, círculo animado y links de CV/Portfolio).
 
 ---
 
 ## 1. Limpieza y refactor general
 
-### 1.1 CSS: de múltiples `<link>` a un solo `main.css`
-
-**Antes:**  
-`index.html` cargaba las hojas de estilo por separado.
-
-**Ahora:**  
-`styles/styles.css` se renombró a `styles/main.css`, y al inicio del archivo se agregaron los imports de los componentes:
-
-```css
-@import url("components/base.css");
-@import url("components/circle.css");
-@import url("components/buttons.css");
-@import url("components/animations.css");
-```
-````
-
-`index.html` ahora solo tiene:
-
-```html
-<link rel="stylesheet" href="styles/main.css" />
-```
-
-También se eliminó el `margin: 0` duplicado en `body`, ya que el reset de `base.css` se encarga de ello.
-
----
+### 1.1 CSS: de 4 `<link>` a un solo `main.css`
+- **Antes**: `index.html` cargaba 4 hojas de estilo por separado (`styles.css`, `base.css`, `circle.css`, `buttons.css`, `animations.css`).
+- **Ahora**: `styles/styles.css` se renombró a `styles/main.css`, y al inicio del archivo se agregaron los `@import` de los componentes:
+  ```css
+  @import url("components/base.css");
+  @import url("components/circle.css");
+  @import url("components/buttons.css");
+  @import url("components/animations.css");
+  ```
+- `index.html` ahora solo tiene:
+  ```html
+  <link rel="stylesheet" href="styles/main.css">
+  ```
+- Se eliminó el `margin: 0` duplicado en `body` dentro de `main.css` (ya lo cubre el reset `* { margin: 0; padding: 0; }` de `base.css`).
 
 ### 1.2 Botones duplicados → clase única `.btn`
+- **Antes**: `.btn-cv` y `.btn-port` en `buttons.css` tenían exactamente el mismo bloque de reglas copiado dos veces (color, glow, transición, hover).
+- **Ahora**: una sola clase `.btn` con todo el estilo, y el espaciado entre botones se resuelve con el selector `.btn + .btn { margin-left: 20px; }` en vez de una clase aparte.
+- `index.html`: los links de CV y Portfolio pasaron de `class="btn-cv"` / `class="btn-port"` a `class="btn"` en ambos.
+- Se agregó `:focus-visible` al hover para que el estado también se vea al navegar con teclado.
 
-**Antes:**
-`.btn-cv` y `.btn-port` tenían el mismo bloque de estilos duplicado.
-
-**Ahora:**
-Se creó una única clase `.btn`.
-
-El espacio entre botones se controla mediante:
-
-```css
-.btn + .btn {
-  margin-left: 20px;
-}
-```
-
-En `index.html`, los enlaces de CV y Portfolio ahora utilizan:
-
-```html
-class="btn"
-```
-
-También se agregó `:focus-visible` para mejorar la navegación mediante teclado.
-
----
-
-### 1.3 `script.js`: eliminación de lógica repetida
-
-**Antes:**
-La inicialización del canvas estaba duplicada: una vez al cargar la página y otra dentro del evento `resize`.
-
-**Ahora:**
-La inicialización se concentra en una única función:
-
-```js
-setup();
-```
-
-Esta función se utiliza tanto al cargar la página como al cambiar el tamaño de la ventana.
-
-Además, se agregó un **debounce de 150 ms** al evento `resize` para evitar recalcular el canvas en cada cambio de píxel durante el redimensionamiento.
-
----
+### 1.3 `script.js`: eliminar lógica repetida
+- **Antes**: la inicialización del canvas (tamaño, columnas, `drops`) estaba escrita una vez al cargar la página y otra vez, casi idéntica, dentro del listener de `resize`.
+- **Ahora**: se extrajo a una sola función `setup()` que se llama tanto al cargar como en el resize.
+- Se agregó **debounce** de 150ms al evento `resize` (antes recalculaba en cada pixel de resize; ahora espera a que el usuario termine de mover la ventana).
 
 ### 1.4 HTML: semántica y seguridad
-
-Se realizaron los siguientes cambios:
-
 - `<div class="name">` → `<h1 class="name">`
 - `<div class="domain">` → `<p class="domain">`
-- Los enlaces de CV y Portfolio se envolvieron en `<nav>`.
-- Se agregó `rel="noopener noreferrer"` a los enlaces que utilizan `target="_blank"`.
-- Se agregó `<meta name="description">`.
-- Se agregó `<meta name="color-scheme" content="dark">`.
-- El archivo JavaScript ahora utiliza `defer`.
-
----
+- Los dos `<a>` de CV/Portfolio se envolvieron en `<nav>`.
+- Se agregó `rel="noopener noreferrer"` a ambos links (usan `target="_blank"`), para evitar que la pestaña abierta tenga acceso a `window.opener`.
+- Se agregó `<meta name="description">` y `<meta name="color-scheme" content="dark">`.
+- El `<script>` se cargó con el atributo `defer`.
 
 ### 1.5 Accesibilidad
-
-Se agregó soporte para:
-
-```css
-prefers-reduced-motion: reduce;
-```
-
-Cuando el usuario tiene activada esta preferencia:
-
-- Se desactiva la rotación del círculo.
-- Se desactiva el parpadeo.
-- Se desactivan las animaciones de glitch.
-- Se desactivan los efectos de overlay.
-- JavaScript no inicia el loop de dibujo del canvas.
-- JavaScript no inicia el ciclo del efecto "malware".
-
----
+- Se agregó soporte para `prefers-reduced-motion: reduce`:
+  - En CSS: desactiva la rotación del círculo (`spin3d`), el parpadeo (`blink`) y las animaciones de glitch/overlay.
+  - En JS: si el usuario tiene esa preferencia activada, no se inicia el loop de dibujo del canvas (`setInterval(draw, ...)`) ni el ciclo de "malware".
 
 ### 1.6 Documentación desactualizada
-
-`structure.md` hacía referencia a un archivo `components.css` que no existía.
-
-La documentación se actualizó para reflejar la estructura real del proyecto:
-
-- `base.css`
-- `circle.css`
-- `buttons.css`
-- `animations.css`
-
-También se excluyeron `.DS_Store` y la carpeta `.git` de las entregas.
+- `structure.md` mencionaba un archivo `components.css` que nunca existió (los archivos reales eran `buttons.css` y `circle.css`, entre otros). Se corrigió para reflejar la estructura real del proyecto.
+- `.DS_Store` y la carpeta `.git` que venían en el `.zip` original se excluyeron de las entregas.
 
 ---
 
-## 2. Ajuste de espaciado y tamaño del contenido
+## 2. Ajuste de espaciado / tamaño del contenido
 
-### Objetivo
+Petición: que el contenido (círculo, nombre, dominio) no se sintiera tan "pegado a la cámara".
 
-El contenido principal se sentía demasiado "pegado a la cámara".
+- Se envolvió el círculo, el nombre, el dominio y el `<nav>` de botones en un contenedor `<div class="content">`, con:
+  ```css
+  .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+  }
+  ```
+- Se redujeron los tamaños máximos:
 
-Para solucionarlo, se creó un contenedor:
-
-```html
-<div class="content">...</div>
-```
-
-Este contenedor utiliza:
-
-```css
-.content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-```
-
-### Cambios de tamaño
-
-| Elemento               | Antes                       | Ahora                       |
-| ---------------------- | --------------------------- | --------------------------- |
-| `.circle` ancho/alto   | `clamp(200px, 24vw, 420px)` | `clamp(160px, 18vw, 340px)` |
-| `.circle-inner` fuente | `clamp(45px, 6vw, 95px)`    | `clamp(36px, 5vw, 76px)`    |
-| `.name` fuente         | `clamp(28px, 4.5vw, 70px)`  | `clamp(24px, 3.8vw, 56px)`  |
-| `.domain` fuente       | `clamp(18px, 2.8vw, 40px)`  | `clamp(15px, 2.2vw, 32px)`  |
+  | Elemento | Antes | Ahora |
+  |---|---|---|
+  | `.circle` (ancho/alto) | `clamp(200px, 24vw, 420px)` | `clamp(160px, 18vw, 340px)` |
+  | `.circle-inner` (fuente) | `clamp(45px, 6vw, 95px)` | `clamp(36px, 5vw, 76px)` |
+  | `.name` (fuente) | `clamp(28px, 4.5vw, 70px)` | `clamp(24px, 3.8vw, 56px)` |
+  | `.domain` (fuente) | `clamp(18px, 2.8vw, 40px)` | `clamp(15px, 2.2vw, 32px)` |
 
 ---
 
-## 3. Efecto "malware" — números rojos + glitch
+## 3. Efecto "malware" (números rojos + glitch)
 
-El efecto fue creado para que ocasionalmente aparezcan columnas de números en rojo, acompañadas de una pequeña distorsión visual del contenido principal.
+Petición original: que ocasionalmente cayeran números en rojo (referencia a malware) y que al caer se generara una pequeña distorsión visual en el contenido principal. Se afinó en varias iteraciones hasta la versión final descrita abajo.
 
----
-
-### 3.1 Nuevo elemento en HTML
-
-Se agregó:
-
+### 3.1 Nuevo elemento en el HTML
 ```html
 <div id="danger-overlay" class="danger-overlay" aria-hidden="true"></div>
 ```
-
-El overlay:
-
-- Ocupa toda la pantalla.
-- Utiliza `position: fixed`.
-- Tiene `pointer-events: none`.
-- Se utiliza para generar un tinte rojo durante los niveles de mayor intensidad.
-
----
+Overlay de pantalla completa, fijo, con `pointer-events: none`, usado solo para dar un tinte rojo de fondo en los niveles más intensos (ver 3.3).
 
 ### 3.2 Lógica en `script.js`
 
-#### Columnas "malware"
+**Columnas "malware":**
+- Se agregó un `Set` llamado `malwareColumns` con los índices de columna que están cayendo en rojo en un momento dado.
+- Esas columnas usan `#ff0033` como color y caen más lento que el resto: incrementan su posición con `MALWARE_SPEED = 0.35` por frame en vez de `1`.
+- Cuando una columna "malware" llega al final y se reinicia (misma lógica probabilística que la lluvia normal), se elimina del `Set`.
 
-Se agregó un `Set` llamado:
-
+**Ciclo de tiempos (`CYCLE_DELAYS`):**
 ```js
-malwareColumns;
+const CYCLE_DELAYS = [60000, 35000, 25000]; // 60s → 35s → 25s → se reinicia
 ```
+- 1ª caída de la sesión: a los **60s**.
+- 2ª caída: **35s** después de la primera.
+- 3ª caída: **25s** después de la segunda.
+- Luego el ciclo vuelve a empezar en 60s, y así sucesivamente (`cycleIndex` cíclico con `%`).
 
-Este contiene los índices de las columnas que actualmente están cayendo en rojo.
+**Niveles de intensidad (`LEVELS`)**, uno por cada caída del ciclo:
 
-Las columnas malware:
+| Nivel | Cuándo | % de columnas en rojo | Duración del glitch |
+|---|---|---|---|
+| 1 — normal | 1ª caída (60s) | 35% | 900 ms |
+| 2 — suspenso | 2ª caída (35s) | 50% | 1600 ms |
+| 3 — alarmante | 3ª caída (25s) | 90% | 2400 ms |
 
-- Utilizan `#ff0033`.
-- Caen más lentamente.
-- Utilizan `MALWARE_SPEED = 0.35`.
-- Se eliminan del `Set` cuando llegan al final y se reinician.
+El número de columnas se calcula sobre el total de columnas visibles en pantalla en ese momento (`Math.round(columns * percent)`), así que se adapta al ancho de la ventana.
+
+**Disparo del glitch:**
+- Al iniciar cada caída, se añade la clase `glitch-1`, `glitch-2` o `glitch-3` al `.content`, y se quita automáticamente con `setTimeout` una vez pasado `glitchMs`.
+- Para los niveles 2 y 3 además se activa `level-2` / `level-3` en el `#danger-overlay` (tinte rojo de fondo), también removido al terminar.
+- Todo esto se salta por completo si el usuario tiene `prefers-reduced-motion: reduce`.
+
+### 3.3 Animaciones en `animations.css`
+
+**`.content.glitch-1/2/3`** — sacuden el contenido principal (`translate` en X/Y, cambios de `opacity` y `filter: hue-rotate()` / `drop-shadow()` en rojo simulando aberración cromática):
+- `glitch-1`: recorrido de hasta 7px, se repite 1 vez (0.9s total).
+- `glitch-2`: recorrido de hasta 10px, con caídas de opacidad más marcadas, se repite 2 veces (1.6s total).
+- `glitch-3`: recorrido de hasta 16px, incluye `scale()` sutil además del `translate`, se repite 3 veces (2.4s total).
+
+**`.danger-overlay.level-2/3`** — pulso de tinte rojo (`radial-gradient` centrado, controlado por `opacity`), mismo esquema de repetición que el glitch correspondiente para que ambos efectos terminen a la vez.
+
+**Accesibilidad**: todas estas animaciones (`glitch-*`, `danger-pulse-*`) se anulan bajo `prefers-reduced-motion: reduce`.
 
 ---
 
-### Ciclo de tiempos
+## 4. Favicon
 
-El ciclo está definido mediante:
+Se generó un favicon a partir del logo `{AM}` del círculo (mismo diseño: fondo negro, degradado radial `#003300 → #000`, glow verde y texto en monospace bold), para mantener consistencia visual entre la pestaña del navegador y la landing.
 
-```js
-const CYCLE_DELAYS = [60000, 35000, 25000];
-```
+**Archivos generados:**
 
-El comportamiento es:
-
-| Caída     |                Tiempo |
-| --------- | --------------------: |
-| Primera   |           60 segundos |
-| Segunda   |   35 segundos después |
-| Tercera   |   25 segundos después |
-| Siguiente | Regresa a 60 segundos |
-
-El ciclo se repite continuamente.
-
----
-
-### Niveles de intensidad
-
-| Nivel         | Momento       | Columnas rojas | Duración del glitch |
-| ------------- | ------------- | -------------: | ------------------: |
-| 1 — Normal    | Primera caída |            35% |              900 ms |
-| 2 — Suspenso  | Segunda caída |            50% |             1600 ms |
-| 3 — Alarmante | Tercera caída |            90% |             2400 ms |
-
-El número de columnas se calcula dinámicamente:
-
-```js
-Math.round(columns * percent);
-```
-
-Esto permite que el efecto se adapte al ancho actual de la ventana.
-
----
-
-### Disparo del glitch
-
-Cuando comienza una caída:
-
-```text
-Nivel 1 → .glitch-1
-Nivel 2 → .glitch-2
-Nivel 3 → .glitch-3
-```
-
-La clase se agrega al `.content` y se elimina automáticamente después de la duración correspondiente.
-
-En los niveles 2 y 3 también se activa:
-
-```text
-.level-2
-.level-3
-```
-
-en:
-
-```html
-#danger-overlay
-```
-
-Todo el efecto se desactiva cuando:
-
-```css
-prefers-reduced-motion: reduce;
-```
-
-está activo.
-
----
-
-## 3.3 Animaciones en `animations.css`
-
-### `.content.glitch-1`
-
-Glitch de intensidad normal:
-
-- Movimiento de hasta 7 px.
-- Se reproduce una vez.
-- Duración total: 0.9 segundos.
-- Incluye cambios de `opacity`.
-- Utiliza `hue-rotate()` y `drop-shadow()`.
-
----
-
-### `.content.glitch-2`
-
-Glitch de intensidad media:
-
-- Movimiento de hasta 10 px.
-- Cambios de opacidad más marcados.
-- Se reproduce dos veces.
-- Duración total: 1.6 segundos.
-
----
-
-### `.content.glitch-3`
-
-Glitch de intensidad alta:
-
-- Movimiento de hasta 16 px.
-- Incluye `scale()` sutil.
-- Se reproduce tres veces.
-- Duración total: 2.4 segundos.
-
----
-
-### `.danger-overlay.level-2/3`
-
-El overlay genera un pulso rojo mediante:
-
-```css
-radial-gradient
-```
-
-La intensidad se controla mediante `opacity`.
-
-El tiempo de la animación coincide con el glitch correspondiente para que ambos efectos terminen simultáneamente.
-
----
-
-## 4. Resumen de archivos modificados
-
-```text
-domain/
-│
-├── index.html
-│   └── main.css único, .content, danger-overlay,
-│       semántica y seguridad
-│
-├── CHANGELOG.md
-│   └── Documentación de cambios
-│
-├── README.md
-│   └── Historial narrativo actualizado
-│
-├── structure.md
-│   └── Estructura del proyecto corregida
-│
-├── scripts/
-│   └── script.js
-│       ├── setup() único
-│       ├── debounce
-│       ├── lógica "malware"
-│       └── lógica glitch
-│
-└── styles/
-    │
-    ├── main.css
-    │   └── Punto de entrada principal
-    │
-    └── components/
-        │
-        ├── base.css
-        │   └── Reset y estilos base
-        │
-        ├── circle.css
-        │   └── Círculo animado
-        │
-        ├── buttons.css
-        │   └── Clase .btn unificada
-        │
-        └── animations.css
-            ├── glitch-1
-            ├── glitch-2
-            ├── glitch-3
-            ├── danger-pulse-2
-            ├── danger-pulse-3
-            └── reduced-motion
-```
-
----
-
-## 5. Resultado
-
-Después de los cambios, el proyecto cuenta con:
-
-- Una estructura CSS más organizada.
-- Un único punto de entrada mediante `main.css`.
-- Eliminación de estilos y lógica duplicada.
-- Botones reutilizables mediante `.btn`.
-- HTML con mejor semántica.
-- Mejoras de seguridad en enlaces externos.
-- Soporte para accesibilidad mediante `prefers-reduced-motion`.
-- Efecto "malware" con diferentes niveles de intensidad.
-- Efectos de glitch sincronizados con el evento malware.
-- Documentación actualizada de la estructura del proyecto.
-
-````
-
-**La clave para que los cuadros/tablas se vean bien** es que Markdown necesita esta estructura:
-
-```md
-| Columna 1 | Columna 2 | Columna 3 |
+| Archivo | Tamaño | Uso |
 |---|---|---|
-| Dato | Dato | Dato |
-````
+| `favicon.ico` | 16/32/48 px (multi-resolución) | navegadores clásicos |
+| `favicon/favicon-16x16.png` | 16×16 | pestaña del navegador |
+| `favicon/favicon-32x32.png` | 32×32 | pestaña del navegador (pantallas HiDPI) |
+| `favicon/apple-touch-icon.png` | 180×180 | ícono al agregar a inicio en iOS |
+| `favicon/android-chrome-192x192.png` | 192×192 | ícono PWA / Android |
+| `favicon/android-chrome-512x512.png` | 512×512 | ícono PWA / Android (splash) |
+| `favicon/site.webmanifest` | — | manifest con nombre, íconos y `theme_color`/`background_color` en negro |
 
-Además, los bloques de código deben llevar tres backticks (` ``` `) al inicio y al final. Con eso, GitHub, GitLab, VS Code y la mayoría de visores Markdown los renderizan correctamente.
+**`index.html`**: se agregaron en el `<head>` los `<link rel="icon">` (`.ico` y ambos `.png`), `<link rel="apple-touch-icon">`, `<link rel="manifest">` y `<meta name="theme-color" content="#000000">`.
+
+> Nota: a 16×16 el detalle de `{AM}` se pierde un poco (queda como una mancha verde reconocible); es una limitación normal de favicons con texto pequeño, no un error.
+
+## 5. Resumen de archivos tocados
+
+```
+domain/
+├── index.html                       (main.css único, .content, danger-overlay, favicon, semántica, seguridad)
+├── favicon.ico                      (nuevo)
+├── favicon/                         (nuevo — pngs + site.webmanifest)
+├── CHANGELOG.md                     (nuevo — este archivo)
+├── README.md                        (historial narrativo actualizado)
+├── structure.md                     (corregido para reflejar la estructura real)
+├── scripts/
+│   └── script.js                    (setup() único, debounce, lógica de "malware" y glitch)
+└── styles/
+    ├── main.css                     (antes styles.css; ahora importa los componentes)
+    └── components/
+        ├── base.css                 (sin cambios)
+        ├── circle.css                (tamaños reducidos)
+        ├── buttons.css               (clase .btn unificada)
+        └── animations.css            (glitch-1/2/3, danger-pulse-2/3, reduced-motion)
+```

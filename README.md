@@ -20,12 +20,23 @@ La idea fue hacer algo visual, simple y con estilo digital, pero que también se
 - Se ajustó el canvas para que siempre ocupara 100% del viewport.
 - Se redujeron los tamaños exagerados del círculo y los textos.
 - Se reorganizó el CSS en archivos separados:
-  - `styles.css`
+  - `main.css` (importa el resto y contiene los estilos globales)
   - `base.css`
-  - `components.css`
+  - `circle.css`
+  - `buttons.css`
   - `animations.css`
 
 Esto dejó el proyecto más limpio y fácil de mantener.
+
+## Segunda pasada de limpieza
+
+- `index.html` ahora carga un solo archivo (`main.css`), que importa los demás con `@import`.
+- Los botones CV y Portfolio compartían el mismo CSS duplicado línea por línea; ahora usan una sola clase `.btn`.
+- Se quitó el `margin: 0` repetido en `body` (ya lo cubre el reset en `base.css`).
+- El script de Matrix tenía la misma lógica de inicialización copiada en el resize; ahora ambas llaman a una sola función `setup()`.
+- Se añadió `rel="noopener noreferrer"` a los enlaces con `target="_blank"` por seguridad.
+- Se respeta `prefers-reduced-motion`: se pausa la animación del canvas y del círculo si el usuario lo prefiere así.
+- `<div>` de nombre/dominio pasaron a `<h1>`/`<p>` y los links a un `<nav>`, para mejor semántica y SEO.
 
 ## Responsividad real
 
