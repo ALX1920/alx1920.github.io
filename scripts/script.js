@@ -1,62 +1,107 @@
-/* MATRIX PRO */
-const canvas = document.getElementById("matrix");
-const ctx = canvas.getContext("2d");
+/* Efecto Matrix (lluvia de números), con caídas de "malware" en rojo */
+(() => {
+    const canvas = document.getElementById("matrix");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const content = document.querySelector(".content");
+    const dangerOverlay = document.getElementById("danger-overlay");
 
-// Ajustar tamaño del canvas
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+    const letters = "01";
+    const fontSize = 32;
 
-// Letras Matrix
-const letters = "01";
+    let columns = 0;
+    let drops = [];
 
-// Tamaño de los números (más grandes)
-const fontSize = 32; // <-- AJUSTADO
+    // Columnas actualmente marcadas como "malware" (caen en rojo y más lento)
+    const malwareColumns = new Set();
+    const MALWARE_SPEED = 0.35; // más lento que la caída normal (1 por frame)
 
-// Número de columnas según tamaño de pantalla
-let columns = Math.floor(canvas.width / fontSize);
+    function setup() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        columns = Math.floor(canvas.width / fontSize);
+        drops = Array.from({ length: columns }, () => Math.random() * -100);
+        malwareColumns.clear();
+    }
 
-// Posición inicial de cada columna
-let drops = [];
-for (let i = 0; i < columns; i++) {
-    drops[i] = Math.random() * -100;
-}
-
-function draw() {
-    // Fondo con transparencia para efecto de estela
-    ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    for (let i = 0; i < drops.length; i++) {
-        const text = letters[Math.floor(Math.random() * letters.length)];
-
-        // Color aleatorio para brillo
-        ctx.fillStyle = Math.random() > 0.96 ? "#66ff99" : "#00ff55";
+    function draw() {
+        // Fondo semitransparente para el efecto de estela
+        ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.font = fontSize + "px monospace";
 
-        // Dibujar número
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        for (let i = 0; i < drops.length; i++) {
+            const isMalware = malwareColumns.has(i);
+            const text = letters[Math.floor(Math.random() * letters.length)];
 
-        // Reiniciar columna cuando llega al final
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-            drops[i] = 0;
+            ctx.fillStyle = isMalware
+                ? "#ff0033"
+                : (Math.random() > 0.96 ? "#66ff99" : "#00ff55");
+
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+                if (isMalware) malwareColumns.delete(i);
+            }
+
+            drops[i] += isMalware ? MALWARE_SPEED : 1;
+        }
+    }
+
+    // Respeta la preferencia de menos movimiento del usuario
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Ciclo de tiempos entre caídas de malware: 60s -> 35s -> 25s -> se reinicia
+    const CYCLE_DELAYS = [60000, 35000, 25000];
+    let cycleIndex = 0;
+
+    // Config por nivel: qué % de columnas cae en rojo y cuánto dura el glitch
+    const LEVELS = {
+        1: { percent: 0.35, glitchMs: 900 },  // caída normal — 35% de los números
+        2: { percent: 0.50, glitchMs: 1600 }, // más suspenso — 50% de los números
+        3: { percent: 0.90, glitchMs: 2400 }  // alarmante — 90% de los números
+    };
+
+    function triggerMalware() {
+        const level = cycleIndex + 1;
+        const { percent, glitchMs } = LEVELS[level];
+        const count = Math.max(1, Math.round(columns * percent));
+
+        let guard = 0;
+        while (malwareColumns.size < count && malwareColumns.size < columns && guard < 500) {
+            malwareColumns.add(Math.floor(Math.random() * columns));
+            guard++;
         }
 
-        drops[i]++;
+        if (!reduceMotion) {
+            if (content) {
+                content.classList.add(`glitch-${level}`);
+                setTimeout(() => content.classList.remove(`glitch-${level}`), glitchMs);
+            }
+            if (dangerOverlay && level >= 2) {
+                dangerOverlay.classList.add(`level-${level}`);
+                setTimeout(() => dangerOverlay.classList.remove(`level-${level}`), glitchMs);
+            }
+        }
+
+        cycleIndex = (cycleIndex + 1) % CYCLE_DELAYS.length;
+        scheduleMalware();
     }
-}
 
-// Velocidad más lenta (antes 40ms)
-setInterval(draw, 75); // <-- AJUSTADO
-
-// Recalcular columnas al cambiar tamaño de pantalla
-window.addEventListener("resize", () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    columns = Math.floor(canvas.width / fontSize);
-    drops = [];
-
-    for (let i = 0; i < columns; i++) {
-        drops[i] = Math.random() * -100;
+    function scheduleMalware() {
+        setTimeout(triggerMalware, CYCLE_DELAYS[cycleIndex]);
     }
-});
+
+    setup();
+    if (!reduceMotion) {
+        setInterval(draw, 75);
+        scheduleMalware();
+    }
+
+    let resizeTimeout;
+    window.addEventListener("resize", () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(setup, 150);
+    });
+})();
