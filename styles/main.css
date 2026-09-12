@@ -1,0 +1,75 @@
+/* ===== COMPONENTES ===== */
+@import url("components/base.css");
+@import url("components/circle.css");
+@import url("components/buttons.css");
+@import url("components/animations.css");
+
+/* ===== GLOBAL ===== */
+body {
+    height: 100vh;
+    background: #000;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+    font-family: Arial, sans-serif;
+}
+
+/* Contenedor del contenido principal (todo menos el canvas) */
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ===== MATRIX CANVAS ===== */
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+/* ===== TEXT GRADIENT ===== */
+.name, .domain {
+    background: linear-gradient(45deg, #00ff55, #009944);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 6px #00ff55);
+    z-index: 10;
+}
+
+/* Tamaños responsivos */
+.name {
+    margin-top: 20px;
+    font-size: clamp(24px, 3.8vw, 56px);
+    font-weight: 600;
+}
+
+.domain {
+    font-size: clamp(15px, 2.2vw, 32px);
+    opacity: 0.9;
+}
+
+/* ===== ACCESIBILIDAD ===== */
+@media (prefers-reduced-motion: reduce) {
+    .circle,
+    .circle-inner {
+        animation: none;
+    }
+    .content.glitch-1,
+    .content.glitch-2,
+    .content.glitch-3,
+    .danger-overlay.level-2,
+    .danger-overlay.level-3 {
+        animation: none;
+    }
+}
