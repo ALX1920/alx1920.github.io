@@ -7,12 +7,13 @@ domain/
 ├── structure.md
 │
 ├── scripts/
-│   ├── script.js
+│   └── script.js
 │
 └── styles/
-    ├── styles.css
+    ├── main.css          (importa los componentes de abajo)
     └── components/
         ├── base.css
-        ├── components.css
+        ├── circle.css
+        ├── buttons.css
         └── animations.css
 ```
