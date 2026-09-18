@@ -58,9 +58,9 @@
 
     // Config por nivel: qué % de columnas cae en rojo y cuánto dura el glitch
     const LEVELS = {
-        1: { percent: 0.35, glitchMs: 900 },  // caída normal — 35% de los números
-        2: { percent: 0.50, glitchMs: 1600 }, // más suspenso — 50% de los números
-        3: { percent: 0.90, glitchMs: 2400 }  // alarmante — 90% de los números
+        1: { percent: 0.35, glitchMs: 1100 },  // caída normal — 35% de los números
+        2: { percent: 0.50, glitchMs: 2000 }, // más suspenso — 50% de los números (repite 2x)
+        3: { percent: 0.90, glitchMs: 2700 }  // alarmante — 90% de los números (repite 3x)
     };
 
     function triggerMalware() {
