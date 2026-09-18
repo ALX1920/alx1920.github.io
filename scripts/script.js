@@ -52,8 +52,8 @@
     // Respeta la preferencia de menos movimiento del usuario
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // Ciclo de tiempos entre caídas de malware: 10s -> 30s -> 15s -> se reinicia
-    const CYCLE_DELAYS = [10000, 30000, 15000];
+    // Ciclo de tiempos entre caídas de malware: 10s -> 25s -> 15s -> se reinicia
+    const CYCLE_DELAYS = [10000, 25000, 15000];
     let cycleIndex = 0;
 
     // Config por nivel: qué % de columnas cae en rojo y cuánto dura el glitch

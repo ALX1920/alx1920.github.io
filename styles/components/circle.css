@@ -1,8 +1,8 @@
 /* ===== CIRCLE COMPONENT ===== */
 
 .circle {
-    width: clamp(200px, 22vw, 400px);
-    height: clamp(200px, 22vw, 400px);
+    width: clamp(240px, 26vw, 460px);
+    height: clamp(240px, 26vw, 460px);
     border-radius: 50%;
     padding: 6px;
 
@@ -30,7 +30,7 @@
     align-items: center;
 
     color: #00ff55;
-    font-size: clamp(44px, 6vw, 90px);
+    font-size: clamp(52px, 7vw, 108px);
     font-weight: bold;
 
     animation: spin3d 10s linear infinite, blink 1.2s infinite;
